@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Informasi Layanan Perpustakaan - Dinas Perpustakaan dan Kearsipan Provinsi Riau</title>
+<style>
+  :root {
+    --hijau-tua: #0F4D3A;
+    --hijau: #1A6B4F;
+    --krem: #F7F4EC;
+    --krem-gelap: #EDE7D6;
+    --teks-utama: #1C2B24;
+    --teks-sekunder: #5C6B62;
+    --putih: #FFFFFF;
+    --garis: #DEDAC9;
+    --kuning: #C99A3C;
+    --merah: #B5483D;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--krem);
+    color: var(--teks-utama);
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--hijau-tua);
+    color: var(--putih);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--kuning);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .brand-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .brand-text span {
+    display: block;
+    font-size: 11px;
+    opacity: 0.8;
+  }
+
+  nav {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  nav button {
+    background: transparent;
+    border: none;
+    color: var(--putih);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    opacity: 0.85;
+    transition: 0.15s;
+  }
+  nav button:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+  nav button.active { background: var(--kuning); color: var(--hijau-tua); opacity: 1; font-weight: 600; }
+
+  main { max-width: 980px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero {
+    background: var(--hijau-tua);
+    color: var(--putih);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    margin-bottom: 24px;
+  }
+  .hero p.eyebrow {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--kuning);
+    margin-bottom: 8px;
+  }
+  .hero h1 { font-size: 26px; font-weight: 600; margin-bottom: 10px; }
+  .hero p.desc { font-size: 14px; opacity: 0.85; max-width: 520px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+
+  .card {
+    background: var(--putih);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .card .icon { font-size: 22px; margin-bottom: 8px; }
+  .card .label { font-size: 12px; color: var(--teks-sekunder); margin-bottom: 4px; }
+  .card .value { font-size: 16px; font-weight: 600; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--teks-sekunder);
+    margin: 28px 0 12px;
+  }
+
+  .layanan-list { display: flex; flex-direction: column; gap: 8px; }
+  .layanan-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--putih);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .layanan-item .ic {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--krem-gelap);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .layanan-item .txt strong { display: block; font-size: 13px; }
+  .layanan-item .txt span { font-size: 12px; color: var(--teks-sekunder); }
+
+  /* Katalog */
+  .search-bar { margin-bottom: 18px; }
+  .search-bar input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius);
+    font-size: 14px;
+    background: var(--putih);
+  }
+  .search-bar input:focus { outline: none; border-color: var(--hijau); }
+
+  .buku-list { display: flex; flex-direction: column; gap: 10px; }
+  .buku-item {
+    display: flex;
+    gap: 14px;
+    background: var(--putih);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    align-items: center;
+  }
+  .buku-cover {
+    width: 40px; height: 56px;
+    border-radius: 4px;
+    background: var(--hijau);
+    flex-shrink: 0;
+  }
+  .buku-info { flex: 1; }
+  .buku-info strong { display: block; font-size: 14px; margin-bottom: 2px; }
+  .buku-info span { font-size: 12px; color: var(--teks-sekunder); }
+  .status {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .status.tersedia { background: #E3F1E8; color: var(--hijau); }
+  .status.dipinjam { background: #FBEEDD; color: var(--kuning); }
+
+  /* Form buku tamu */
+  .form-card {
+    background: var(--putih);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 480px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--teks-sekunder);
+    margin-bottom: 6px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--garis);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--krem);
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--hijau);
+    background: var(--putih);
+  }
+  .btn-submit {
+    width: 100%;
+    background: var(--hijau-tua);
+    color: var(--putih);
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-submit:hover { background: var(--hijau); }
+
+  .confirm-box {
+    display: none;
+    background: #E3F1E8;
+    border: 1px solid var(--hijau);
+    color: var(--hijau-tua);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+
+  /* Admin */
+  .login-box {
+    max-width: 360px;
+    margin: 40px auto;
+    background: var(--putih);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .login-box h2 { font-size: 16px; margin-bottom: 18px; text-align: center; }
+
+  .admin-dashboard { display: none; }
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .admin-header h2 { font-size: 18px; }
+  .logout-link { font-size: 13px; color: var(--merah); cursor: pointer; background: none; border: none; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--putih);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--garis);
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--garis);
+  }
+  th { background: var(--krem-gelap); color: var(--teks-sekunder); font-weight: 600; font-size: 12px; }
+  tr:last-child td { border-bottom: none; }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: var(--teks-sekunder);
+  }
+
+  @media (max-width: 640px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    nav { width: 100%; justify-content: space-between; }
+    nav button { flex: 1; padding: 8px 6px; font-size: 12px; }
+    .hero h1 { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">📚</div>
+    <div class="brand-text">
+      <strong>Dispusip Riau</strong>
+      <span>Layanan Perpustakaan Online</span>
+    </div>
+  </div>
+  <nav>
+    <button class="active" onclick="gantiHalaman('beranda', this)">Beranda</button>
+    <button onclick="gantiHalaman('katalog', this)">Katalog</button>
+    <button onclick="gantiHalaman('tamu', this)">Buku Tamu</button>
+    <button onclick="gantiHalaman('admin', this)">Admin</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HALAMAN BERANDA -->
+  <section id="page-beranda" class="page active">
+    <div class="hero">
+      <p class="eyebrow">Dinas Perpustakaan dan Kearsipan Provinsi Riau</p>
+      <h1>Selamat datang di layanan perpustakaan online</h1>
+      <p class="desc">Akses informasi layanan, jelajahi katalog buku, dan isi kunjungan kamu secara digital tanpa perlu antre di tempat.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="icon">🕒</div>
+        <div class="label">Jam operasional</div>
+        <div class="value">Senin - Jumat, 08.00 - 16.00</div>
+      </div>
+      <div class="card">
+        <div class="icon">📍</div>
+        <div class="label">Lokasi</div>
+        <div class="value">Jl. Sudirman, Pekanbaru, Riau</div>
+      </div>
+    </div>
+
+    <p class="section-title">Layanan tersedia</p>
+    <div class="layanan-list">
+      <div class="layanan-item">
+        <div class="ic">🪑</div>
+        <div class="txt"><strong>Baca di tempat</strong><span>Fasilitas membaca nyaman di ruang baca utama</span></div>
+      </div>
+      <div class="layanan-item">
+        <div class="ic">🚐</div>
+        <div class="txt"><strong>Perpustakaan keliling</strong><span>Layanan jemput bola ke sekolah dan wilayah sekitar</span></div>
+      </div>
+      <div class="layanan-item">
+        <div class="ic">🗂️</div>
+        <div class="txt"><strong>Layanan kearsipan</strong><span>Pengelolaan dan konsultasi penyimpanan arsip</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALAMAN KATALOG -->
+  <section id="page-katalog" class="page">
+    <p class="section-title">Katalog buku</p>
+    <div class="search-bar">
+      <input type="text" id="cariBuku" placeholder="Cari judul atau pengarang..." onkeyup="cariBukuFn()">
+    </div>
+    <div class="buku-list" id="daftarBuku"></div>
+  </section>
+
+  <!-- HALAMAN BUKU TAMU -->
+  <section id="page-tamu" class="page">
+    <p class="section-title">Buku tamu digital</p>
+    <div class="form-card">
+      <form id="formTamu" onsubmit="kirimTamu(event)">
+        <div class="form-group">
+          <label>Nama lengkap</label>
+          <input type="text" required placeholder="Masukkan nama">
+        </div>
+        <div class="form-group">
+          <label>NIM / NIK</label>
+          <input type="text" required placeholder="Masukkan nomor identitas">
+        </div>
+        <div class="form-group">
+          <label>Tujuan kunjungan</label>
+          <select>
+            <option>Baca di tempat</option>
+            <option>Mencari referensi</option>
+            <option>Layanan kearsipan</option>
+            <option>Lainnya</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-submit">Kirim data kunjungan</button>
+      </form>
+      <div class="confirm-box" id="confirmBox">Data kunjungan berhasil dikirim. Terima kasih sudah berkunjung.</div>
+    </div>
+  </section>
+
+  <!-- HALAMAN ADMIN -->
+  <section id="page-admin" class="page">
+    <div class="login-box" id="loginBox">
+      <h2>Masuk sebagai admin</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-submit" onclick="masukAdmin()">Masuk</button>
+      <p style="font-size:11px;color:var(--teks-sekunder);margin-top:10px;text-align:center;">Ini cuma preview, isi apa saja lalu klik Masuk</p>
+    </div>
+
+    <div class="admin-dashboard" id="adminDashboard">
+      <div class="admin-header">
+        <h2>Dashboard admin</h2>
+        <button class="logout-link" onclick="keluarAdmin()">Keluar</button>
+      </div>
+
+      <div class="grid-3">
+        <div class="card"><div class="label">Total buku</div><div class="value">128</div></div>
+        <div class="card"><div class="label">Pengunjung hari ini</div><div class="value">14</div></div>
+        <div class="card"><div class="label">Pesan masuk</div><div class="value">3</div></div>
+      </div>
+
+      <p class="section-title">Rekap buku tamu</p>
+      <table>
+        <thead><tr><th>Nama</th><th>NIM/NIK</th><th>Tujuan</th><th>Waktu</th></tr></thead>
+        <tbody>
+          <tr><td>Siti Aminah</td><td>2105134</td><td>Baca di tempat</td><td>09.12</td></tr>
+          <tr><td>Rian Saputra</td><td>2201090</td><td>Mencari referensi</td><td>10.40</td></tr>
+          <tr><td>Dewi Lestari</td><td>3310221</td><td>Layanan kearsipan</td><td>13.05</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>Preview tampilan &middot; Sistem Informasi Layanan Perpustakaan untuk Pengunjung &middot; Dinas Perpustakaan dan Kearsipan Provinsi Riau</footer>
+
+<script>
+  function gantiHalaman(nama, btn) {
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('page-' + nama).classList.add('active');
+    document.querySelectorAll('nav button').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+
+  var dataBuku = [
+    { judul: "Laskar Pelangi", pengarang: "Andrea Hirata", kategori: "Fiksi", status: "tersedia" },
+    { judul: "Sejarah Riau", pengarang: "Tim Penulis", kategori: "Sejarah", status: "dipinjam" },
+    { judul: "Pemrograman Web Dasar", pengarang: "Budi Santoso", kategori: "Teknologi", status: "tersedia" },
+    { judul: "Negeri 5 Menara", pengarang: "Ahmad Fuadi", kategori: "Fiksi", status: "tersedia" },
+    { judul: "Adat Istiadat Melayu Riau", pengarang: "Tim Penulis", kategori: "Budaya", status: "dipinjam" }
+  ];
+
+  function renderBuku(list) {
+    var wrap = document.getElementById('daftarBuku');
+    wrap.innerHTML = '';
+    list.forEach(function(b) {
+      var statusLabel = b.status === 'tersedia' ? 'Tersedia' : 'Dipinjam';
+      wrap.innerHTML += '<div class="buku-item">' +
+        '<div class="buku-cover"></div>' +
+        '<div class="buku-info"><strong>' + b.judul + '</strong><span>' + b.pengarang + ' &middot; ' + b.kategori + '</span></div>' +
+        '<div class="status ' + b.status + '">' + statusLabel + '</div>' +
+      '</div>';
+    });
+  }
+  renderBuku(dataBuku);
+
+  function cariBukuFn() {
+    var kata = document.getElementById('cariBuku').value.toLowerCase();
+    var hasil = dataBuku.filter(function(b) {
+      return b.judul.toLowerCase().indexOf(kata) > -1 || b.pengarang.toLowerCase().indexOf(kata) > -1;
+    });
+    renderBuku(hasil);
+  }
+
+  function kirimTamu(e) {
+    e.preventDefault();
+    document.getElementById('confirmBox').style.display = 'block';
+    document.getElementById('formTamu').reset();
+  }
+
+  function masukAdmin() {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('adminDashboard').style.display = 'block';
+  }
+  function keluarAdmin() {
+    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('adminDashboard').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
